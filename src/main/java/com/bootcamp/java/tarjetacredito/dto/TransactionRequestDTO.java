@@ -29,7 +29,10 @@ public class TransactionRequestDTO {
     @JsonIgnore
     private Integer OwnAccountNumber;
 
+    @JsonIgnore
     private String destinationAccountNumber;
+
+    @JsonIgnore
     private Integer destinationIdProduct;
 
     @JsonIgnore

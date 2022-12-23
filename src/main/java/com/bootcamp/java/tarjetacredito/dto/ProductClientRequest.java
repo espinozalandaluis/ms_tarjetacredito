@@ -3,6 +3,8 @@ package com.bootcamp.java.tarjetacredito.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Builder
 public class ProductClientRequest {
@@ -12,5 +14,6 @@ public class ProductClientRequest {
     //private Double depositAmount;
     private Double creditLimit;
     private String accountNumber ;
-    private String creditNumber ;
+    private String creditCardNumber ;
+    private Integer billingDay;
 }

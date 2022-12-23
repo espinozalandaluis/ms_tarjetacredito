@@ -14,4 +14,6 @@ public interface ProductClientRepository extends ReactiveMongoRepository<Product
 
     Mono<ProductClient> findByAccountNumber(String AccountNumber);
 
+    Mono<ProductClient> findByCreditCardNumber(String CreditCardNumber);
+
 }

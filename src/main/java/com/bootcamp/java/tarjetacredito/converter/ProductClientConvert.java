@@ -36,6 +36,10 @@ public class ProductClientConvert {
                 .accountNumber(productClient.getAccountNumber())
                 .transactionFee(productClient.getTransactionFee())
                 .creditCardNumber(productClient.getCreditCardNumber())
+                .billingDay(productClient.getBillingDay())
+                .billingDate(productClient.getBillingDate())
+                .invoiceDebt(productClient.getInvoiceDebt())
+                .expiredDebt(productClient.getExpiredDebt())
                 .build();
     }
 
@@ -65,7 +69,11 @@ public class ProductClientConvert {
                 //.credits(productClientDTO.getCredits())
                 .accountNumber(productClientRequest.getAccountNumber())
                 .transactionFee(productResponseDTO.getTransactionFee())
-                .creditCardNumber(productClientRequest.getCreditNumber())
+                .creditCardNumber(productClientRequest.getCreditCardNumber())
+                .billingDay(productClientRequest.getBillingDay())
+                //.billingDate()
+                .invoiceDebt(0.0)
+                .expiredDebt(0.0)
                 .build();
     }
 
@@ -94,6 +102,10 @@ public class ProductClientConvert {
                 .accountNumber(productClientDTO.getAccountNumber())
                 .transactionFee(productClientDTO.getTransactionFee())
                 .creditCardNumber(productClientDTO.getCreditCardNumber())
+                .billingDay(productClientDTO.getBillingDay())
+                .billingDate(productClientDTO.getBillingDate())
+                .invoiceDebt(productClientDTO.getInvoiceDebt())
+                .expiredDebt(productClientDTO.getExpiredDebt())
                 .build();
     }
 

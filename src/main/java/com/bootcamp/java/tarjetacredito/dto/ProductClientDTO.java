@@ -3,6 +3,9 @@ package com.bootcamp.java.tarjetacredito.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+import java.util.Date;
+
 @Data
 @Builder
 public class ProductClientDTO {
@@ -30,4 +33,8 @@ public class ProductClientDTO {
     private String accountNumber;
     private Double transactionFee;
     private String creditCardNumber;
+    private Integer billingDay;
+    private Date billingDate;
+    private Double invoiceDebt;
+    private Double expiredDebt;
 }
