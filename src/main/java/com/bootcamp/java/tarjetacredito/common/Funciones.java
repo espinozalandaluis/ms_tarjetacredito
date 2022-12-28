@@ -21,7 +21,19 @@ public class Funciones {
         log.info("Calendar date: " + calendar.getTime());
         return calendar.getTime();
     }
+    //Integer billingDay
+    public static Date GetBillingDate(Integer billingDay) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, 1 );
+        var year = calendar.get(Calendar.YEAR);
+        var month = calendar.get(Calendar.MONTH);
 
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DATE, billingDay);
+
+        return calendar.getTime();
+    }
     public static Date GetCurrentDate(){
         Date currentDate = new Date();
         return currentDate;

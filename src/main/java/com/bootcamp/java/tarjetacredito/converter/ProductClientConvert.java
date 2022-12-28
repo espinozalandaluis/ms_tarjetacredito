@@ -8,6 +8,8 @@ import com.bootcamp.java.tarjetacredito.dto.webClientDTO.ProductResponseDTO;
 import com.bootcamp.java.tarjetacredito.entity.ProductClient;
 import org.springframework.stereotype.Component;
 
+import static com.bootcamp.java.tarjetacredito.common.Funciones.GetBillingDate;
+
 @Component
 public class ProductClientConvert {
     public static ProductClientDTO EntityToDTO(ProductClient productClient) {
@@ -71,7 +73,7 @@ public class ProductClientConvert {
                 .transactionFee(productResponseDTO.getTransactionFee())
                 .creditCardNumber(productClientRequest.getCreditCardNumber())
                 .billingDay(productClientRequest.getBillingDay())
-                //.billingDate()
+                .billingDate(GetBillingDate(productClientRequest.getBillingDay()))
                 .invoiceDebt(0.0)
                 .expiredDebt(0.0)
                 .build();
