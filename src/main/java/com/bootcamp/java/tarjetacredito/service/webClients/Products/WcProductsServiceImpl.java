@@ -5,6 +5,7 @@ import com.bootcamp.java.tarjetacredito.dto.webClientDTO.ProductResponseDTO;
 import com.bootcamp.java.tarjetacredito.service.webClients.Products.WcProductsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,8 +23,10 @@ import java.time.Duration;
 @Transactional
 public class WcProductsServiceImpl implements WcProductsService {
 
+    @Autowired
+    Constantes constantes;
     private final WebClient wcProducts = WebClient.builder()
-            .baseUrl(Constantes.WebClientUriMSProducto)
+            .baseUrl(constantes.webClientUriMSProducto)
             .defaultCookie("cookieKey", "cookieValue")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
@@ -36,7 +39,7 @@ public class WcProductsServiceImpl implements WcProductsService {
                         response -> response.bodyToMono(String.class)
                                 .map(Exception::new))
                 .bodyToFlux(ProductResponseDTO.class)
-                .timeout(Duration.ofMillis(10_000));
+                .timeout(Duration.ofMillis(constantes.TimeOutWebClients));
     }
 
     @Override
@@ -48,6 +51,6 @@ public class WcProductsServiceImpl implements WcProductsService {
                         response -> response.bodyToMono(String.class)
                                 .map(Exception::new))
                 .bodyToMono(ProductResponseDTO.class)
-                .timeout(Duration.ofMillis(10_000));
+                .timeout(Duration.ofMillis(constantes.TimeOutWebClients));
     }
 }

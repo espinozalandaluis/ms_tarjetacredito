@@ -1,12 +1,16 @@
 package com.bootcamp.java.tarjetacredito.common;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
 
 @Slf4j
+@AllArgsConstructor
+@Component
 public class Constantes {
     public static final Integer ClientTypePersonal = 1;
 
@@ -48,33 +52,31 @@ public class Constantes {
 
     public static final long TimeOutWebClients = 10_000;
 
-    public static String hostGateway;
+    public static String webClientUriMSCliente;
 
-    @Value("${SERVER_GATEWAY}")
-    public void setHostGateway(String SERVER_GATEWAY) {
-        Constantes.hostGateway = SERVER_GATEWAY;
+    @Value("${SERVER_GATEWAY:localhost}")
+    public void setwebClientUriMSCliente(String SERVER_GATEWAY) {
+        Constantes.webClientUriMSCliente = "http://" + SERVER_GATEWAY + ":8080/v1/client";
+    }
+    public static String webClientUriMSProducto = "";
+
+    @Value("${SERVER_GATEWAY:localhost}")
+    public void setWebClientUriMSProducto(String SERVER_GATEWAY) {
+        Constantes.webClientUriMSProducto = "http://" + SERVER_GATEWAY + ":8080/v1/product";
+    }
+    //Products Pasivos
+    //Products Pasivos
+    public static String webClientUriMSPasivoCuentaCorriente = "";
+    public static String webClientUriMSPasivoCuentaCorrienteTrx = "";
+
+    @Value("${SERVER_GATEWAY:localhost}")
+    public void setWebClientUriMSPasivoCuentaCorriente(String SERVER_GATEWAY) {
+        Constantes.webClientUriMSPasivoCuentaCorriente = "http://" + SERVER_GATEWAY + ":8080/v1/pasivocuentacorriente/getByAccountNumber";
     }
 
-    public static final String WebClientUriMSCliente = "http://" + hostGateway + ":8080/v1/client";
-    public static final String WebClientUriMSProducto = "http://" + hostGateway + ":8080/v1/product";
+    @Value("${SERVER_GATEWAY:localhost}")
+    public void setWebClientUriMSPasivoCuentaCorrienteTrx(String SERVER_GATEWAY) {
+        Constantes.webClientUriMSPasivoCuentaCorrienteTrx = "http://" + SERVER_GATEWAY + ":8080/v1/pasivocuentacorriente/externalTransaction";
+    }
 
-    //Products Pasivos
-    public static final String WebClientUriMSPasivoCuentaCorriente = "http://" + hostGateway + ":8080/v1/pasivocuentacorriente/getByAccountNumber";
-    public static final String WebClientUriMSPasivoCuentaCorrienteTrx = "http://" + hostGateway + ":8080/v1/pasivocuentacorriente/externalTransaction";
-
-    public static final String WebClientUriMSPasivoPlazoFijo = "http://" + hostGateway + ":8080/v1/pasivoplazofijo/getByAccountNumber";
-    public static final String WebClientUriMSPasivoPlazoFijoTrx = "http://" + hostGateway + ":8080/v1/pasivoplazofijo/externalTransaction";
-
-    //Products Activos
-    public static final String WebClientUriMSActivoTarjetaCredito = "http://" + hostGateway + ":8080/v1/activotarjetacredito/getByAccountNumber";
-    public static final String WebClientUriMSActivoTarjetaCreditoTrx = "http://" + hostGateway + ":8080/v1/activotarjetacredito/externalTransaction";
-
-    public static final String WebClientUriMSActivoCreditoPersonal = "http://" + hostGateway + ":8080/v1/activocreditopersonal/getByAccountNumber";
-    public static final String WebClientUriMSActivoCreditoPersonalTrx = "http://" + hostGateway + ":8080/v1/activocreditopersonal/externalTransaction";
-
-    public static final String WebClientUriMSActivoCreditoEmpresarial = "http://" + hostGateway + ":8080/v1/activocreditoempresarial/getByAccountNumber";
-    public static final String WebClientUriMSActivoCreditoEmpresarialTrx = "http://" + hostGateway + ":8080/v1/activocreditoempresarial/externalTransaction";
-
-    //Para consulta de tarjeta de credito
-    public static final String WebClientUriMSActivoTarjetaCreditoDocumentNumber = "http://" + hostGateway + ":8080/v1/activotarjetacredito/getByDocumentNumber";
 }

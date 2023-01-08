@@ -24,17 +24,18 @@ import java.time.Duration;
 @Transactional
 public class WcPasivoCuentaCorrienteServiceImpl implements WcPasivoCuentaCorrienteService {
 
+
     @Autowired
     Constantes constantes;
 
     private final WebClient wcPasivoCuentaCorriente = WebClient.builder()
-            .baseUrl(constantes.WebClientUriMSPasivoCuentaCorriente)
+            .baseUrl(constantes.webClientUriMSPasivoCuentaCorriente)
             .defaultCookie("cookieKey", "cookieValue")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
 
     private final WebClient wcPasivoCuentaCorrienteTrx = WebClient.builder()
-            .baseUrl(constantes.WebClientUriMSPasivoCuentaCorrienteTrx)
+            .baseUrl(constantes.webClientUriMSPasivoCuentaCorrienteTrx)
             .defaultCookie("cookieKey", "cookieValue")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
