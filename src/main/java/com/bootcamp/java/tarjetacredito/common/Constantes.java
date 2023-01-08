@@ -48,9 +48,12 @@ public class Constantes {
 
     public static final long TimeOutWebClients = 10_000;
 
-    @Value("${container.name.gateway:localhost}")
-    private static final String hostGateway = "ms-gateway";
-    //public static final String hostGateway = "localhost";
+    public static String hostGateway;
+
+    @Value("${SERVER_GATEWAY}")
+    public void setHostGateway(String SERVER_GATEWAY) {
+        Constantes.hostGateway = SERVER_GATEWAY;
+    }
 
     public static final String WebClientUriMSCliente = "http://" + hostGateway + ":8080/v1/client";
     public static final String WebClientUriMSProducto = "http://" + hostGateway + ":8080/v1/product";

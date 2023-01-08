@@ -6,6 +6,7 @@ import com.bootcamp.java.tarjetacredito.dto.TransactionDTO;
 import com.bootcamp.java.tarjetacredito.dto.webClientDTO.ClientResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,14 +24,17 @@ import java.time.Duration;
 @Transactional
 public class WcPasivoCuentaCorrienteServiceImpl implements WcPasivoCuentaCorrienteService {
 
+    @Autowired
+    Constantes constantes;
+
     private final WebClient wcPasivoCuentaCorriente = WebClient.builder()
-            .baseUrl(Constantes.WebClientUriMSPasivoCuentaCorriente)
+            .baseUrl(constantes.WebClientUriMSPasivoCuentaCorriente)
             .defaultCookie("cookieKey", "cookieValue")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
 
     private final WebClient wcPasivoCuentaCorrienteTrx = WebClient.builder()
-            .baseUrl(Constantes.WebClientUriMSPasivoCuentaCorrienteTrx)
+            .baseUrl(constantes.WebClientUriMSPasivoCuentaCorrienteTrx)
             .defaultCookie("cookieKey", "cookieValue")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
@@ -47,7 +51,7 @@ public class WcPasivoCuentaCorrienteServiceImpl implements WcPasivoCuentaCorrien
                         response -> response.bodyToMono(String.class)
                                 .map(Exception::new))
                 .bodyToMono(ProductClientDTO.class)
-                .timeout(Duration.ofMillis(Constantes.TimeOutWebClients));
+                .timeout(Duration.ofMillis(constantes.TimeOutWebClients));
     }
 
     @Override
@@ -61,6 +65,6 @@ public class WcPasivoCuentaCorrienteServiceImpl implements WcPasivoCuentaCorrien
                         response -> response.bodyToMono(String.class)
                                 .map(Exception::new))
                 .bodyToMono(TransactionDTO.class)
-                .timeout(Duration.ofMillis(Constantes.TimeOutWebClients));
+                .timeout(Duration.ofMillis(constantes.TimeOutWebClients));
     }
 }
