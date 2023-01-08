@@ -1,8 +1,9 @@
 package com.bootcamp.java.tarjetacredito.controller;
 
-import com.bootcamp.java.tarjetacredito.dto.*;
+import com.bootcamp.java.tarjetacredito.dto.ProductClientReportDTO;
+import com.bootcamp.java.tarjetacredito.dto.TransactionDTO;
+import com.bootcamp.java.tarjetacredito.dto.TransactionRequestDTO;
 import com.bootcamp.java.tarjetacredito.service.transaction.TransactionService;
-import com.bootcamp.java.tarjetacredito.service.transactionType.TransactionTypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,14 @@ public class transactionController {
     private TransactionService transactionService;
 
     @GetMapping()
-    public Mono<ResponseEntity<Flux<TransactionDTO>>> getAllTrx(){
+    public Mono<ResponseEntity<Flux<TransactionDTO>>> getAllTrx() {
         log.info("getAll TransactionDTO executed");
         return Mono.just(ResponseEntity.ok()
                 .body(transactionService.findAll()));
     }
 
     @GetMapping("/{documentNumber}")
-    public Mono<ResponseEntity<Flux<ProductClientTransactionDTO2>>> getByDocumentNumber(@PathVariable String documentNumber){
+    public Mono<ResponseEntity<Flux<ProductClientReportDTO>>> getByDocumentNumber(@PathVariable String documentNumber) {
         log.info("getByDocumentNumber executed {}", documentNumber);
         return Mono.just(ResponseEntity.ok()
                 .body(transactionService.findByDocumentNumber(documentNumber)));
@@ -43,9 +44,6 @@ public class transactionController {
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.badRequest().build());
     }
-
-
-
 
 
 }

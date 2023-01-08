@@ -5,7 +5,6 @@ import com.bootcamp.java.tarjetacredito.common.exceptionHandler.FunctionalExcept
 import com.bootcamp.java.tarjetacredito.converter.ProductClientConvert;
 import com.bootcamp.java.tarjetacredito.converter.TransactionConvert;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientDTO;
-import com.bootcamp.java.tarjetacredito.dto.ProductClientReportDTO;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientRequest;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientTransactionDTO;
 import com.bootcamp.java.tarjetacredito.entity.ProductClient;
@@ -57,33 +56,13 @@ public class ProductClientServiceImpl implements ProductClientService {
     }
 
     @Override
-    public Flux<ProductClientReportDTO> findByDocumentNumber(String DocumentNumber) {
-        /*
-        List<ProductClientReportDTO> productClientReports = new ArrayList<>();
-        var productClients = productClientRepository.findByDocumentNumber(DocumentNumber)
-                .flatMap(prodCli -> {
-                    return Flux.just(prodCli);
-                }).collectList();
-        productClients.forEach((prodCli) -> {
-            var transactions = transactionRepository.findByIdProductClient(prodCli.getId())
-                    .flatMap(transaction -> {
-                        return Flux.just(transaction);
-                    }).collectList().block();
-            var data = ProductClientReportDTO.builder()
-                    .productClient(prodCli)
-                    .transactionList(transactions)
-                    .build();
-            productClientReports.add(data);
-        });
-        return productClientReports;
-         */
-        return productClientRepository.findByDocumentNumber(DocumentNumber)
-                .flatMap(prodCli -> {
-                    var data = transactionRepository.findByIdProductClient(prodCli.getId())
-                            .collectList()
-                            .map(transactions -> ProductClientReportDTO.from(prodCli, transactions));
-                    return data;
-                });
+    public Flux<ProductClientDTO> findByDocumentNumber(String DocumentNumber) {
+        log.debug("findByDocumentNumber executing");
+        Flux<ProductClientDTO> dataProductClientDTO = productClientRepository.findByDocumentNumber(DocumentNumber)
+                .map(ProductClientConvert::EntityToDTO)
+                .switchIfEmpty(Mono.error(() -> new FunctionalException("No se encontraron registros")));
+        ;
+        return dataProductClientDTO;
     }
 
     @Override

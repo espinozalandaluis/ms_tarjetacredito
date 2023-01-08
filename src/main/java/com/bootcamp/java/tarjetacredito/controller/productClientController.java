@@ -1,7 +1,6 @@
 package com.bootcamp.java.tarjetacredito.controller;
 
 import com.bootcamp.java.tarjetacredito.dto.ProductClientDTO;
-import com.bootcamp.java.tarjetacredito.dto.ProductClientReportDTO;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientRequest;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientTransactionDTO;
 import com.bootcamp.java.tarjetacredito.service.productClient.ProductClientService;
@@ -39,21 +38,18 @@ public class productClientController {
                 .body(productClientService.findAll()));
     }
 
-    @GetMapping("/{documentNumber}")
-    public Mono<ResponseEntity<Flux<ProductClientReportDTO>>> getByDocumentNumber(@PathVariable String documentNumber) {
+    @GetMapping("documentNumber/{documentNumber}")
+    public Mono<ResponseEntity<Flux<ProductClientDTO>>> getByDocumentNumber(@PathVariable String documentNumber) {
         log.info("getByDocumentNumber executed {}", documentNumber);
         return Mono.just(ResponseEntity.ok()
                 .body(productClientService.findByDocumentNumber(documentNumber)));
     }
-/*
-    @GetMapping("/{accountNumber}")
-    public Mono<ResponseEntity<ProductClientDTO>> findByAccountNumber(@PathVariable String accountNumber){
+
+    @GetMapping("accountNumber/{accountNumber}")
+    public Mono<ResponseEntity<ProductClientDTO>> findByAccountNumber(@PathVariable String accountNumber) {
         log.info("findByAccountNumber executed {}", accountNumber);
         return productClientService.findByAccountNumber(accountNumber)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.noContent().build());
     }
-
- */
-
 }

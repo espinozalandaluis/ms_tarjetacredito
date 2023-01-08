@@ -5,7 +5,9 @@ import com.bootcamp.java.tarjetacredito.common.Funciones;
 import com.bootcamp.java.tarjetacredito.common.exceptionHandler.FunctionalException;
 import com.bootcamp.java.tarjetacredito.converter.ProductClientConvert;
 import com.bootcamp.java.tarjetacredito.converter.TransactionConvert;
-import com.bootcamp.java.tarjetacredito.dto.*;
+import com.bootcamp.java.tarjetacredito.dto.ProductClientReportDTO;
+import com.bootcamp.java.tarjetacredito.dto.TransactionDTO;
+import com.bootcamp.java.tarjetacredito.dto.TransactionRequestDTO;
 import com.bootcamp.java.tarjetacredito.entity.ProductClient;
 import com.bootcamp.java.tarjetacredito.entity.Transaction;
 import com.bootcamp.java.tarjetacredito.repository.ProductClientRepository;
@@ -19,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.Closeable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -27,7 +28,7 @@ import java.math.RoundingMode;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class TransactionServiceImpl implements TransactionService{
+public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -52,33 +53,31 @@ public class TransactionServiceImpl implements TransactionService{
                     log.info("Resultado de prodclient");
                     log.info(prodclient.toString());
                     return transactionRepository.findTrxPerMoth(Funciones.GetFirstDayOfCurrentMonth()
-                                    ,transactionRequestDTO.getIdProductClient()).collectList()
+                                    , transactionRequestDTO.getIdProductClient()).collectList()
                             .flatMap(trxPerMonth -> {
                                 log.info("-------->>>>>>>>>");
                                 log.info("Resultado de trxPerMonth");
                                 log.info(trxPerMonth.toString());
-                                if(transactionRequestDTO.getIdTransactionType() == Constantes.TipoTrxTransferenciaEntrada
+                                if (transactionRequestDTO.getIdTransactionType() == Constantes.TipoTrxTransferenciaEntrada
                                         || transactionRequestDTO.getIdTransactionType() == Constantes.TipoTrxTransferenciaSalida
                                         || transactionRequestDTO.getIdTransactionType() == Constantes.TipoTrxRetiro
                                         || transactionRequestDTO.getIdTransactionType() == Constantes.TipoTrxDeposito)
                                     return Mono.error(() -> new FunctionalException("Error, tipo de transaccion no admitida"));
 
-                                if(transactionRequestDTO.getMont() <= 0.009)
+                                if (transactionRequestDTO.getMont() <= 0.009)
                                     return Mono.error(() -> new FunctionalException("El monto debe ser mayor a 0.00"));
 
                                 if (trxPerMonth.stream().count() >= prodclient.getMovementLimit()) {
                                     log.info("Cobro de comision por pasar limite de movimientos");
                                     transactionRequestDTO.setTransactionFee(prodclient.getTransactionFee());
-                                }
-                                else{
+                                } else {
                                     log.info("NO Cobro de comision porque aun no pasa limite de movimientos");
                                     transactionRequestDTO.setTransactionFee(0.0);
                                 }
                                 transactionRequestDTO.setSourceAccountNumber(prodclient.getAccountNumber());
 
-                                if(transactionRequestDTO.getIdTransactionType() == Constantes.TipoTrxConsumo &&
-                                        ((prodclient.getMovementLimit() - prodclient.getDebt()) >= (transactionRequestDTO.getMont() + transactionRequestDTO.getTransactionFee())) )
-                                {
+                                if (transactionRequestDTO.getIdTransactionType() == Constantes.TipoTrxConsumo &&
+                                        ((prodclient.getMovementLimit() - prodclient.getDebt()) >= (transactionRequestDTO.getMont() + transactionRequestDTO.getTransactionFee()))) {
                                     log.info("No tiene fondos suficientes para realizar la operacion");
                                     return Mono.error(() -> new FunctionalException("No tiene fondos suficientes para realizar la operacion"));
                                 }
@@ -90,14 +89,14 @@ public class TransactionServiceImpl implements TransactionService{
 
                                 Transaction trx = transactionConverter.DTOtoEntity(transactionRequestDTO);
                                 return transactionRepository.save(trx)
-                                        .flatMap(t->{
+                                        .flatMap(t -> {
                                             prodclient.setDebt(CalculateDebt(prodclient.getDebt(),
                                                     trx.getMont(),
                                                     trx.getIdTransactionType(),
                                                     trx.getTransactionFee()));
 
                                             return productClientRepository.save(prodclient)
-                                                    .flatMap(x-> {
+                                                    .flatMap(x -> {
                                                         log.info("Actualizado el Debt");
                                                         return transactionRepository.findById(t.getId())
                                                                 .map(TransactionConvert::EntityToDTO);
@@ -117,7 +116,7 @@ public class TransactionServiceImpl implements TransactionService{
                             .flatMap(productClient -> {
                                 productClient.setBalance(CalculateBalance(productClient.getBalance(),
                                         transactionDTO.getMont(),
-                                        Constantes.TipoTrxTransferenciaEntrada,0.0));
+                                        Constantes.TipoTrxTransferenciaEntrada, 0.0));
 
                                 return productClientRepository.save(productClient)
                                         .flatMap(prdcli -> {
@@ -130,7 +129,7 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
 
-    public Mono<TransactionDTO> registerTrxEntrada(ProductClient productClient, Transaction transactionOrigen){
+    public Mono<TransactionDTO> registerTrxEntrada(ProductClient productClient, Transaction transactionOrigen) {
 
         transactionOrigen.setId(null);
         transactionOrigen.setIdTransactionType(Constantes.TipoTrxTransferenciaEntrada);
@@ -149,7 +148,7 @@ public class TransactionServiceImpl implements TransactionService{
                 });
     }
 
-    public Mono<TransactionDTO> registerTrxEntradaDebt(ProductClient productClient, Transaction transactionOrigen){
+    public Mono<TransactionDTO> registerTrxEntradaDebt(ProductClient productClient, Transaction transactionOrigen) {
 
         String newDestinationAccountNumber = transactionOrigen.getSourceAccountNumber();
         String newSourceAccountNumber = transactionOrigen.getDestinationAccountNumber();
@@ -173,20 +172,14 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public Flux<ProductClientTransactionDTO2> findByDocumentNumber(String documentNumber) {
+    public Flux<ProductClientReportDTO> findByDocumentNumber(String documentNumber) {
         return productClientRepository.findByDocumentNumber(documentNumber)
-                .flatMap(productocliente -> {
-                    log.info("ProductClientTransactionDTO {}", productocliente);
-
-                    return transactionRepository.findByIdProductClient(productocliente.getId())
-                            .flatMap(trx -> {
-                                return Flux.just(ProductClientTransactionDTO2.builder()
-                                        .productClientDTO(productClientConvert.EntityToDTO(productocliente))
-                                        .transactionDTO(transactionConverter.EntityToDTO(trx))
-                                        .build());
-                            });
-                })
-                .switchIfEmpty(Mono.error(() -> new FunctionalException("No se encontraron registros de productos afiliados")));
+                .flatMap(prodCli -> {
+                    var data = transactionRepository.findByIdProductClient(prodCli.getId())
+                            .collectList()
+                            .map(transactions -> ProductClientReportDTO.from(prodCli, transactions));
+                    return data;
+                }).switchIfEmpty(Mono.error(() -> new FunctionalException("No se encontraron registros de productos afiliados")));
     }
 
     @Override
@@ -199,19 +192,19 @@ public class TransactionServiceImpl implements TransactionService{
 
     private Double CalculateBalance(Double ActualBalance, Double amountTrx, Integer transactionType, Double trxFee) {
         Double newBalance = 0.00;
-        if(transactionType.equals(Constantes.TipoTrxRetiro)) //retiro
+        if (transactionType.equals(Constantes.TipoTrxRetiro)) //retiro
             newBalance = ActualBalance - amountTrx - trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxDeposito)) //deposito
+        if (transactionType.equals(Constantes.TipoTrxDeposito)) //deposito
             newBalance = ActualBalance + amountTrx - trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxConsumo)) //deposito
+        if (transactionType.equals(Constantes.TipoTrxConsumo)) //deposito
             newBalance = ActualBalance - amountTrx - trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxTransferenciaSalida)) //Transferencia a cuenta externa
+        if (transactionType.equals(Constantes.TipoTrxTransferenciaSalida)) //Transferencia a cuenta externa
             newBalance = ActualBalance - amountTrx - trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxTransferenciaEntrada)) //Transferencia a cuenta externa
+        if (transactionType.equals(Constantes.TipoTrxTransferenciaEntrada)) //Transferencia a cuenta externa
             newBalance = ActualBalance + amountTrx - trxFee;
 
         BigDecimal bd = new BigDecimal(newBalance).setScale(2, RoundingMode.HALF_UP);
@@ -226,28 +219,27 @@ public class TransactionServiceImpl implements TransactionService{
         log.info(transactionType.toString());
         log.info(trxFee.toString());
 
-        if(transactionType.equals(Constantes.TipoTrxDeposito)) //deposito
+        if (transactionType.equals(Constantes.TipoTrxDeposito)) //deposito
             newDebt = ActualDebt - debtTrx + trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxPago)) //pago
+        if (transactionType.equals(Constantes.TipoTrxPago)) //pago
             newDebt = ActualDebt - debtTrx + trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxRetiro)) //retiro
+        if (transactionType.equals(Constantes.TipoTrxRetiro)) //retiro
             newDebt = ActualDebt + debtTrx + trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxConsumo)) //consumo
+        if (transactionType.equals(Constantes.TipoTrxConsumo)) //consumo
             newDebt = ActualDebt + debtTrx + trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxTransferenciaSalida)) //Transferencia a cuenta externa
+        if (transactionType.equals(Constantes.TipoTrxTransferenciaSalida)) //Transferencia a cuenta externa
             newDebt = ActualDebt + debtTrx + trxFee;
 
-        if(transactionType.equals(Constantes.TipoTrxTransferenciaEntrada)) //Transferencia a cuenta externa
+        if (transactionType.equals(Constantes.TipoTrxTransferenciaEntrada)) //Transferencia a cuenta externa
             newDebt = ActualDebt - debtTrx + trxFee;
 
         BigDecimal bd = new BigDecimal(newDebt).setScale(2, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
 
 
 }
