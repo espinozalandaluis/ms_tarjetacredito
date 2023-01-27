@@ -2,12 +2,14 @@ package com.bootcamp.java.tarjetacredito.service.productClient;
 
 import com.bootcamp.java.tarjetacredito.common.Constantes;
 import com.bootcamp.java.tarjetacredito.common.exceptionHandler.FunctionalException;
+import com.bootcamp.java.tarjetacredito.converter.KafkaConvert;
 import com.bootcamp.java.tarjetacredito.converter.ProductClientConvert;
 import com.bootcamp.java.tarjetacredito.converter.TransactionConvert;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientDTO;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientRequest;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientTransactionDTO;
 import com.bootcamp.java.tarjetacredito.entity.ProductClient;
+import com.bootcamp.java.tarjetacredito.kafka.KafkaProducer;
 import com.bootcamp.java.tarjetacredito.repository.ProductClientRepository;
 import com.bootcamp.java.tarjetacredito.repository.TransactionRepository;
 import com.bootcamp.java.tarjetacredito.service.transaction.TransactionService;
@@ -26,6 +28,12 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Transactional
 public class ProductClientServiceImpl implements ProductClientService {
+
+    @Autowired
+    KafkaProducer kafkaProducer;
+
+    @Autowired
+    KafkaConvert kafkaConvert;
 
     @Autowired
     private ProductClientRepository productClientRepository;
@@ -113,7 +121,15 @@ public class ProductClientServiceImpl implements ProductClientService {
 
                                                                     return productClientRepository.save(prdCli)
                                                                             .flatMap(productocliente -> {
+
+                                                                                com.bootcamp.java.kafka.ProductClientDTO prdKafka = kafkaConvert.ProductClientEntityToDTOKafka(productocliente);
+                                                                                log.info("OBJECTO PRODCLI KAFKA: {}", prdKafka.toString());
+                                                                                //Enviar mensaje por Kafka de ProductClient DTO
+                                                                                kafkaProducer.sendMessageProductClient(kafkaConvert.ProductClientEntityToDTOKafka(productocliente));
+                                                                                log.info("KAFKA sendMessageProductClient");
+
                                                                                 log.info("Resultado de guardar ProductClient: {}", productocliente.toString());
+
                                                                                 return Mono.just(ProductClientTransactionDTO.builder()
                                                                                         .productClientDTO(productClientConvert.EntityToDTO(productocliente))
                                                                                         .build());

@@ -3,7 +3,6 @@ package com.bootcamp.java.tarjetacredito.service.webClients.pasivoCuentaCorrient
 import com.bootcamp.java.tarjetacredito.common.Constantes;
 import com.bootcamp.java.tarjetacredito.dto.ProductClientDTO;
 import com.bootcamp.java.tarjetacredito.dto.TransactionDTO;
-import com.bootcamp.java.tarjetacredito.dto.webClientDTO.ClientResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -41,12 +39,10 @@ public class WcPasivoCuentaCorrienteServiceImpl implements WcPasivoCuentaCorrien
             .build();
 
 
-
-
     @Override
     public Mono<ProductClientDTO> findByAccountNumber(String accountNumber) {
         return wcPasivoCuentaCorriente.get()
-                .uri("/{accountNumber}" ,accountNumber)
+                .uri("/{accountNumber}", accountNumber)
                 .retrieve()
                 .onStatus(httpStatus -> HttpStatus.NO_CONTENT.equals(httpStatus),
                         response -> response.bodyToMono(String.class)
@@ -59,7 +55,7 @@ public class WcPasivoCuentaCorrienteServiceImpl implements WcPasivoCuentaCorrien
     public Mono<TransactionDTO> registerTrxEntradaExterna(TransactionDTO transactionDTO,
                                                           String idProductClient) {
         return wcPasivoCuentaCorrienteTrx.post()
-                .uri("/{idProductClient}" ,idProductClient)
+                .uri("/{idProductClient}", idProductClient)
                 .body(Mono.just(transactionDTO), TransactionDTO.class)
                 .retrieve()
                 .onStatus(httpStatus -> HttpStatus.NO_CONTENT.equals(httpStatus),

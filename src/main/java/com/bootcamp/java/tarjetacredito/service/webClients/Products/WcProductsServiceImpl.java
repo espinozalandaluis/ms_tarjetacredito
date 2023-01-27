@@ -2,7 +2,6 @@ package com.bootcamp.java.tarjetacredito.service.webClients.Products;
 
 import com.bootcamp.java.tarjetacredito.common.Constantes;
 import com.bootcamp.java.tarjetacredito.dto.webClientDTO.ProductResponseDTO;
-import com.bootcamp.java.tarjetacredito.service.webClients.Products.WcProductsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ public class WcProductsServiceImpl implements WcProductsService {
     @Override
     public Mono<ProductResponseDTO> findById(Integer IdProduct) {
         return wcProducts.get()
-                .uri("/{IdProduct}" ,IdProduct)
+                .uri("/{IdProduct}", IdProduct)
                 .retrieve()
                 .onStatus(httpStatus -> HttpStatus.NO_CONTENT.equals(httpStatus),
                         response -> response.bodyToMono(String.class)

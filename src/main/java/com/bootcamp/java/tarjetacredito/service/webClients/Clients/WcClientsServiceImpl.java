@@ -2,7 +2,6 @@ package com.bootcamp.java.tarjetacredito.service.webClients.Clients;
 
 import com.bootcamp.java.tarjetacredito.common.Constantes;
 import com.bootcamp.java.tarjetacredito.dto.webClientDTO.ClientResponseDTO;
-import com.bootcamp.java.tarjetacredito.service.webClients.Clients.WcClientsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class WcClientsServiceImpl implements WcClientsService {
     @Override
     public Mono<ClientResponseDTO> findById(Integer IdClient) {
         return wcClients.get()
-                .uri("/{IdClient}" ,IdClient)
+                .uri("/{IdClient}", IdClient)
                 .retrieve()
                 .onStatus(httpStatus -> HttpStatus.NO_CONTENT.equals(httpStatus),
                         response -> response.bodyToMono(String.class)
@@ -58,7 +57,7 @@ public class WcClientsServiceImpl implements WcClientsService {
     @Override
     public Mono<ClientResponseDTO> findByDocumentNumber(String documentNumber) {
         return wcClients.get()
-                .uri("/{documentNumber}" ,documentNumber)
+                .uri("/{documentNumber}", documentNumber)
                 .retrieve()
                 .onStatus(httpStatus -> HttpStatus.NO_CONTENT.equals(httpStatus),
                         response -> response.bodyToMono(String.class)
